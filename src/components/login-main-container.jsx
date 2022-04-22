@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import '../styles/login-container.css';
 import {Navigate} from 'react-router-dom';
+import { AppContext } from '../context/app-context';
 // const navigate = useNavigate();
 
 
@@ -23,7 +24,6 @@ class LoginContainer extends Component {
         otpSent: false,
         mobile_number: '',
         otp:'',
-        authenticated: false
     }
     
 
@@ -110,9 +110,8 @@ class LoginContainer extends Component {
             (response) => {
                 console.log(response.headers['set-cookie']);
                 if (response.status == 200){
-                    this.setState((prevState) => {
-                        return {...prevState, authenticated: true}
-                    })
+                    console.log(this.context.contextState.isUserAuthenticated);
+                    this.context.toggleAuthentication();
                 }
             }
         )
@@ -143,7 +142,7 @@ class LoginContainer extends Component {
     }
 
     loginRenderer(){
-        if (this.state.authenticated)
+        if (this.context.contextState.isUserAuthenticated)
             return <Navigate to="/myinfo" replace/>
         else{
             return(
@@ -161,5 +160,7 @@ class LoginContainer extends Component {
         return this.loginRenderer();
     }
 }
+
+LoginContainer.contextType = AppContext;
  
 export default LoginContainer;

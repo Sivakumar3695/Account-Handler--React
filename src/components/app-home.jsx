@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { Link, Outlet} from 'react-router-dom';
+import { Link, Outlet, Navigate} from 'react-router-dom';
 import '../styles/app-home.css'
+import { AppContext } from '../context/app-context';
 
 const PERSONAL_INF_ELEMENT = 'personal-info'
 const MY_APP_ELEMENT = 'myapps'
@@ -59,6 +60,19 @@ class AppHome extends Component {
         return navLinkDom;
     }
 
+    renderAppHome(isUserAuthenticated){
+        if (isUserAuthenticated){
+            return (
+                <React.Fragment>
+                        {this.navBar()}
+                        {this.mainAppContentHolder()}
+                </React.Fragment>
+            )
+        }
+
+        return <Navigate to="/login" replace />
+    }
+
     navBar(){
         return (
             <div className='top-navbar'>
@@ -79,11 +93,12 @@ class AppHome extends Component {
 
     render() { 
         return (
-            
-            <React.Fragment>
-                {this.navBar()}
-                {this.mainAppContentHolder()}
-            </React.Fragment>
+            <AppContext.Consumer>{
+                ({contextState, toggleUseAuthentication}) => (
+                   this.renderAppHome(contextState.isUserAuthenticated)
+                )
+            }
+            </AppContext.Consumer>
         );
     }
 }
