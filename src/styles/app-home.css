@@ -1,0 +1,53 @@
+.top-navbar {
+  width: 100%;
+  background-color: cadetblue;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.main-app-content-holder {
+  background-color: cadetblue;
+  flex-grow: 1;
+  width: 100%;
+}
+
+.nav-links {
+  list-style-type: none;
+  display: flex;
+  justify-content: center;
+  width: 50%;
+  background-color: white;
+  padding: 0.5%;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+.nav-link {
+  padding: 10px;
+  color: white;
+}
+
+.nav-link > a {
+  color: cadetblue;
+  text-decoration: none;
+}
+
+.nav-link-active > a {
+  padding: 10px;
+  color: white;
+  text-decoration: none;
+  background-color: cadetblue;
+  border-radius: 20px;
+}
+
+.main-content {
+  background-color: white;
+  width: 50%;
+  margin: auto;
+  height: 100%;
+  border-radius: 5px;
+  padding: 0.5%;
+  flex-grow: 1;
+  margin-top: 5px;
+}

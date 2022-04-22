@@ -1,0 +1,29 @@
+.profile-pic-holder {
+  border-bottom: 2px solid #4e9297;
+  padding: 5px;
+  padding-bottom: 20px;
+}
+
+.profile-pic {
+  margin: auto;
+  display: block;
+  border-radius: 50%;
+}
+
+.personal-info-label {
+  color: #565654b5;
+  font-style: italic;
+}
+
+.personal-details-holder {
+  padding: 20px;
+  display: flex;
+  flex-direction: initial;
+  flex-wrap: wrap;
+}
+
+.personal-details {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  width: 50%;
+}

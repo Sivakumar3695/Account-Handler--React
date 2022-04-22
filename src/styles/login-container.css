@@ -1,0 +1,123 @@
+.login-container {
+  width: 30%;
+  height: fit-content;
+  border: 1px solid #cdcbcb;
+  margin: auto;
+  align-content: center;
+  /* display: flex; */
+  box-shadow: 0px 0px 8px 2px #e5e4e4;
+  padding: 20px;
+}
+
+.login-singup-button-holder {
+  display: flex;
+  height: fit-content;
+  width: -webkit-fill-available;
+}
+
+.btn {
+  float: left;
+  padding: 5% 5%;
+  border-bottom: 1px solid #eeecec;
+  width: inherit;
+  cursor: pointer;
+  color: #848a8f;
+  text-align: center;
+}
+
+.btn:active {
+  border-bottom: 1px solid;
+  color: #3b3674;
+}
+
+.google-btn {
+  width: 52.5%;
+  height: 8%;
+  background-color: #4285f4;
+  border-radius: 2px;
+  box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.25);
+  margin: auto;
+  margin-bottom: 10px;
+}
+
+.google-icon-wrapper {
+  position: absolute;
+  margin-top: 1px;
+  margin-left: 1px;
+  width: 40px;
+  height: 40px;
+  border-radius: 2px;
+  background-color: #fff;
+}
+.google-icon {
+  position: absolute;
+  margin-top: 11px;
+  margin-left: 11px;
+  width: 18px;
+  height: 18px;
+}
+.btn-text {
+  float: right;
+  margin: 11px 11px 0 0;
+  color: #fff;
+  font-size: 14px;
+  letter-spacing: 0.2px;
+  font-family: "Roboto";
+}
+google-btn:hover {
+  box-shadow: 0 0 6px #4285f4;
+}
+google-btn:active {
+  background: #1669f2;
+}
+
+.fb-login-button {
+  width: 100%;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.g-signin-btn,
+.f-signin-btn {
+  margin: auto;
+  width: fit-content;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.custom-signin {
+  padding: 25px;
+}
+
+.login-label {
+  color: #979797;
+  padding-top: 20px;
+  height: 10px;
+}
+
+.login-input {
+  margin: 20px 0px;
+  border: 1px solid #dbd6d6;
+  width: -webkit-fill-available;
+  height: 40px;
+  font-size: 18px;
+  color: #767878;
+}
+
+.login-input:focus-visible,
+.login-input:focus,
+.login-input:focus-within {
+  border: 1px solid rgb(0 0 255 / 24%);
+  outline: none;
+  box-shadow: 0px 0px 2px 0px;
+}
+
+.login-btn {
+  width: 100%;
+  height: 40px;
+  background-color: blue;
+  color: white;
+  border: none;
+  font-size: 16px;
+  font-weight: bold;
+}
