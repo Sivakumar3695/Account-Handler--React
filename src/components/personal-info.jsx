@@ -1,44 +1,30 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect, useState } from 'react';
 import PersonalInfoModal from './personal-info-modal';
 import '../styles/personal-info.css';
-import axios from 'axios';
-import { Navigate } from 'react-router-dom';
-import { AppContext } from '../context/app-context';
+import { NullToEmptyStrConverter } from '../utils/response-utils';
+import { useAxios } from '../utils/request-utils';
 
-const personalInfoDispProp = {
-    displayName: {label:'Display Name', type:'text-input', allowedStrPattern: /.+/, canEditInModal:true},
-    phoneNumber: {label:'Phone Name', type:'text-input', allowedStrPattern:/[1-9][0-9]{9}/, canEditInModal:false},
 
-    //not mandatory
-    nickName: {label:'Nick Name', type:'text-input', allowedStrPattern: /.+/, canEditInModal:true},
-    email: {label:'Email', type:'text-input', allowedStrPattern: /[^\s@]+@[^\s@]+\.[^\s@]+/, canEditInModal:true},
-    photoUrl: {type: 'upload'},
-    gender: {label:'Gender', type:'radio-input', canEditInModal:true,}
-}
-
-class PersonalInfo extends Component {
-    state = {
-        personalInfo:{
-            displayName: {value:'', label:'Display Name', type:'text-input', allowedStrPattern: /.+/, canEditInModal:true},
-            phoneNumber: {value:'', label:'Phone Name', type:'text-input', allowedStrPattern:/[1-9][0-9]{9}/, canEditInModal:false},
-
-            //not mandatory
-            nickName: {value:'', label:'Nick Name', type:'text-input', allowedStrPattern: /.+/, canEditInModal:true},
-            email: {value:'', label:'Email', type:'text-input', allowedStrPattern: /[^\s@]+@[^\s@]+\.[^\s@]+/, canEditInModal:true},
-            photoUrl: {value:'', type: 'upload'},
-            gender: {value: NaN, display: '', label:'Gender', type:'radio-input', canEditInModal:true, 
-                possibleValues:[
-                    {value: 'male', label:'Male'}, 
-                    {value: 'female', label:'Female'},
-                    {value: 'not_mentioned', label: 'Not willing to provide my gender details'}
-                ]}
-        },
-        incompleteDetailsExists: false
-    }
-
-    getMandatoryEntries(){
-        return ['displayName', 'phoneNumber']
-    }
+const PersonalInfo = () => {
+    const {processUrl} = useAxios()
+    const [state, setState] = useState(
+        {
+            personalInfo:{
+                displayName: '',
+                phoneNumber: '',
+                
+                //not mandatory
+                nickName: '',
+                email: '',
+                photoUrl: '',
+                gender: {
+                    value: 'not_mentioned', 
+                    display: '', 
+                    }
+            },
+            incompleteDetailsExists: false
+        }
+    )
 
     // renderGenderOptions(){
     //     var genederElements = this.state.personalInfo.gender.possibleValues.map(obj => {
@@ -54,8 +40,8 @@ class PersonalInfo extends Component {
     //     return genederElements;
     // }
 
-    renderImage(){
-        var imgUrl = this.state.personalInfo.photoUrl.value !== '' ? this.state.personalInfo.photoUrl.value : process.env.PUBLIC_URL + '/images/default-profile-icon.jpg';
+    const renderImage = () => {
+        var imgUrl = state.personalInfo.photoUrl !== '' ? state.personalInfo.photoUrl : process.env.PUBLIC_URL + '/images/default-profile-icon.jpg';
         return (
             <div className='profile-pic-holder'>
                 <img className='profile-pic' width="30%"src={imgUrl} alt='Not Found'/>
@@ -63,102 +49,149 @@ class PersonalInfo extends Component {
         )
     }
 
-    renderDetails(){
+    const renderPersonalDetails = () => {
+        var personDetailsArr = Object.keys(state.personalInfo)
+            .filter(key => Object.keys(PersonalInfoDispProp).includes(key) && ['text-input', 'radio-input'].includes(PersonalInfoDispProp[key].type))
+            .map(key => {
+                var curVal = state.personalInfo[key];
+                return (
+                    <div className='personal-details' key={'personal-details-' + key}>
+                        <label className='personal-info-label'>{PersonalInfoDispProp[key].label}</label><br></br><br></br>
+                        <span className='personal-info-text'>{typeof curVal == 'object' ? curVal.display : curVal}</span>
+                    </div>
+                )
+            })
+        return personDetailsArr;
+    }
+
+    const renderDetailsHolder = () => {
        return (
         <div className='personal-details-holder'>
-            <div className='personal-details'>
-                <label className='personal-info-label'>Display Name</label><br></br><br></br>
-                <span className='personal-info-text'>{this.state.personalInfo.displayName.value}</span>
-            </div>
-
-            <div className='personal-details'>
-                <label className='personal-info-label'>Nick Name</label><br></br><br></br>
-                <span className='personal-info-text'>{this.state.personalInfo.nickName.value}</span>
-            </div>
-
-            <div className='personal-details'>
-                <label className='personal-info-label'>Phone Name</label><br></br><br></br>
-                <span className='personal-info-text'>{this.state.personalInfo.phoneNumber.value}</span>
-            </div>
-
-            <div className='personal-details'>
-                <label className='personal-info-label'>Email</label><br></br><br></br>
-                <span className='personal-info-text'>{this.state.personalInfo.email.value}</span>
-            </div>
-
-            <div className='personal-details'>
-                <label className='personal-info-label'>Gender</label><br></br><br></br>
-                <span className='personal-info-text'>{this.state.personalInfo.gender.display}</span>
-            </div>
-
-    </div>
+            {renderPersonalDetails()}            
+        </div>
        )
     }
 
-    handleEntryUpdates(personalInfoObj, incompleteDetInfo){
-        this.setState({
-            personalInfo: personalInfoObj, 
-            incompleteDetailsExists: incompleteDetInfo
-        })
-    }
-    
-    async componentDidMount(){
-        try{
-            var resp = await axios.get('http://localhost:8080/getMyDetails',
-            {
-                withCredentials: true
-            });
-            var resp_data = resp.data;
-            var newState = {...this.state};
+    const updateState = (newState) => {
+        //handle gender disp valu;
+        let genderPersonalInfo = newState.personalInfo.gender;
+        let genderObj = PossibleGenderValues.filter(obj => obj.value === genderPersonalInfo.value).at(0);
+        genderPersonalInfo.display = genderObj.display;
 
-            var personalInfo = newState.personalInfo;
-            var resp_user_det = resp_data.user_details;
-            personalInfo.displayName.value = resp_user_det.display_name;
-            personalInfo.nickName.value = resp_user_det.nick_name;
-            personalInfo.email.value = resp_user_det.email_id;
-            personalInfo.gender.value = resp_user_det.gender_code;
-            personalInfo.gender.display = resp_user_det.gender_display_name;
-            personalInfo.phoneNumber.value = resp_user_det.phone_number;
-
-            newState.incompleteDetailsExists = resp_data.incomplete_details_exist;
-
-            this.setState(newState)
-            console.log(newState);
-        }
-        catch(err){
-            console.log('Error during /getMyDetails API call');
-            var response = err.response;
-            if (response.status === 401){
-                let appState = this.context
-                //unauthorized request. Hence, redirect to /login page.
-                appState.toggleAuthentication();
-            }
-            console.log(err.response);
-        }
+        setState(newState);
     }
 
-    handleModalPopup(){
+    const updatePersonalInfoStateOnUserInput = (key, value, subkey) => {
+        var prevState = {...state}
+        if (subkey)
+            prevState.personalInfo[key][subkey] = value;
+        else
+            prevState.personalInfo[key] = value;
+
+        updateState(prevState);
+    }
+
+    const updatePersonalInfoStateWithServerResp = (resp) => {
+        if (resp == null || resp.status != 200)
+            return
+        var resp_data = resp.data;
+        var newState = {...state};
+
+        NullToEmptyStrConverter(resp_data)        
+
+        var personalInfo = newState.personalInfo;
+        var resp_user_det = resp_data.user_details;
+        personalInfo.displayName = resp_user_det.display_name;
+        personalInfo.nickName = resp_user_det.nick_name;
+        personalInfo.email = resp_user_det.email_id;
+        personalInfo.gender.value = resp_user_det.gender_code;
+        personalInfo.gender.display = resp_user_det.gender_display_name;
+        personalInfo.phoneNumber = resp_user_det.phone_number;
+
+        newState.incompleteDetailsExists = resp_data.incomplete_details_exist;
+
+        updateState(newState);
+    }
+
+    const handleModalPopup = () => {
         return (
             <PersonalInfoModal 
-            show={this.state.incompleteDetailsExists} 
-            personalInfo={this.state.personalInfo} 
-            incompleteDetailsExists={this.state.incompleteDetailsExists}
-            handleEntryUpdates={this.handleEntryUpdates.bind(this)}
-            mandatoryEntries={this.getMandatoryEntries()}/>
+            show={state.incompleteDetailsExists} 
+            personalInfo={state.personalInfo} 
+            incompleteDetailsExists={state.incompleteDetailsExists}
+            updatePersonalInfoStateOnUserInput={updatePersonalInfoStateOnUserInput}
+            updatePersonalInfoStateWithServerResp={updatePersonalInfoStateWithServerResp}
+            />
         )
     }
 
-    render() { 
-        return (
-            <div className='main-content'>
-                    {this.renderImage()}
-                    {this.renderDetails()}
-                    {this.handleModalPopup()}
-            </div>
-        )
-    }
+    useEffect (() => {
+        async function getMyDetails(){
+            const response = await processUrl({
+                method: 'GET',
+                url:  'http://localhost:8080/getMyDetails',
+                withCredentials: true
+            })
+            updatePersonalInfoStateWithServerResp(response);
+        };
+
+        getMyDetails();
+
+    }, [])
+
+    return (
+        
+        <div className='main-content'>
+                {renderImage()}
+                {renderDetailsHolder()}
+                {handleModalPopup()}
+        </div>
+    )
 }
 
-PersonalInfo.contextType = AppContext;
- 
 export default PersonalInfo;
+
+const PersonalInfoDispProp = {
+    displayName: {
+        label:'Display Name', 
+        type:'text-input', 
+        allowedStrPattern: /.+/, 
+        canEditInModal:true
+    },
+    phoneNumber: {
+        label:'Phone Name', 
+        type:'text-input', 
+        allowedStrPattern:/[1-9][0-9]{9}/, 
+        canEditInModal:false
+    },
+
+    //not mandatory
+    nickName: {
+        label:'Nick Name', 
+        type:'text-input', 
+        allowedStrPattern: /.+/, 
+        canEditInModal:true
+    },
+    email: {
+        label:'Email', 
+        type:'text-input', 
+        allowedStrPattern: /[^\s@]+@[^\s@]+\.[^\s@]+/, 
+        canEditInModal:true
+    },
+    gender: {
+        label:'Gender', 
+        type:'radio-input', 
+        canEditInModal:true,
+    },
+    photoUrl: {type: 'upload'}
+}
+
+const PossibleGenderValues = [
+    {value: 'male', display:'Male'}, 
+    {value: 'female', display:'Female'},
+    {value: 'not_mentioned', display: 'Not willing to provide my gender details'}
+]
+
+const MandatoryFields = ['displayName', 'phoneNumber']
+
+export {PersonalInfoDispProp, MandatoryFields, PossibleGenderValues}

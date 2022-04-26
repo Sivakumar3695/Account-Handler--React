@@ -61,6 +61,7 @@ class AppHome extends Component {
     }
 
     renderAppHome(isUserAuthenticated){
+        console.log(isUserAuthenticated);
         if (isUserAuthenticated){
             return (
                 <React.Fragment>
@@ -95,7 +96,7 @@ class AppHome extends Component {
         return (
             <AppContext.Consumer>{
                 ({contextState, toggleUseAuthentication}) => (
-                   this.renderAppHome(contextState.isUserAuthenticated)
+                    this.renderAppHome(contextState.isUserAuthenticated)
                 )
             }
             </AppContext.Consumer>
