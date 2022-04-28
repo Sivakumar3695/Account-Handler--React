@@ -1,12 +1,14 @@
-import React, { Component, useEffect, useState } from 'react';
+import React, { Component, useCallback, useEffect, useState } from 'react';
 import PersonalInfoModal from './personal-info-modal';
 import '../styles/personal-info.css';
+import '../styles/App.css';
 import { NullToEmptyStrConverter } from '../utils/response-utils';
 import { useAxios } from '../utils/request-utils';
+import useInputHandler from '../utils/input-hook';
+import {PersonalInfoDispMetaData} from '../metadata/personal-info'
 
 
 const PersonalInfo = () => {
-    const {processUrl} = useAxios()
     const [state, setState] = useState(
         {
             personalInfo:{
@@ -26,19 +28,44 @@ const PersonalInfo = () => {
         }
     )
 
-    // renderGenderOptions(){
-    //     var genederElements = this.state.personalInfo.gender.possibleValues.map(obj => {
-    //         var isChecked = this.state.personalInfo.gender.value === obj.value;
-        
-    //         return (
-    //             <React.Fragment>
-    //                 <input name='gender' type='radio' className='personal-info-text' value={obj.value} checked={isChecked}/>
-    //                 <label>{obj.label}</label>
-    //             </React.Fragment>
-    //         )
-    //     })
-    //     return genederElements;
-    // }
+    const [editEnabledInfo, setEditEnabledInfo] = useState('')
+    const [showEditFor, setShowEditFor] = useState('')
+    const {errorInputs, editState, editSpecificElement} = useInputHandler(state.personalInfo, PersonalInfoDispMetaData);
+    const {data, processing, processUrl} = useAxios();
+
+
+    useEffect(() => {
+        processUrl({
+            method: 'GET',
+            url:  'http://localhost:8080/getMyDetails',
+            withCredentials: true
+        })  
+    },[])
+
+    useEffect(() => {
+        // updateStateWithData();
+        if (data)
+            updatePersonalInfoStateWithServerResp(data);
+    }, [data, processing])
+
+
+    const saveDetails = () => {
+        processUrl({
+            method: 'PUT',
+            url: 'http://localhost:8080/updateMyDetails',
+            withCredentials : true,
+            data: {
+                'display_name' : editState.displayName,
+                'nick_name' : editState.nickName,
+                'email_id' : editState.email,
+                'gender' : editState.gender.value
+            },
+            headers: {
+                'Content-Type' : 'application/json'
+            }
+        })
+        setEditEnabledInfo('')
+    }
 
     const renderImage = () => {
         var imgUrl = state.personalInfo.photoUrl !== '' ? state.personalInfo.photoUrl : process.env.PUBLIC_URL + '/images/default-profile-icon.jpg';
@@ -49,15 +76,105 @@ const PersonalInfo = () => {
         )
     }
 
+    const updateEditableInfoState = (key) => {
+
+        //set editState
+        if (key === '')
+            editSpecificElement(editEnabledInfo, state.personalInfo[editEnabledInfo])
+        else
+            editSpecificElement(key, state.personalInfo[key])
+
+        
+        setEditEnabledInfo(key)
+    }
+
+    const renderEditableInput = (key) => {
+        if (PersonalInfoDispMetaData[key].type === 'text'){
+           return (
+            <input 
+                id={key + "-input"} 
+                type={"text"}
+                className='personal-info-input' 
+                value={editState[key]}
+                onChange={(event) => editSpecificElement(key, event.target.value)}
+                autoFocus={true}
+            />
+           )
+        }
+        else if (PersonalInfoDispMetaData[key].type === 'radio'){
+            var genederElements = PersonalInfoDispMetaData[key].possibleValues.map(obj => {
+                return (
+                    <React.Fragment key={'info-det-'+obj.value}>
+                        <input 
+                        id={key + '-info-page-' + obj.value}
+                        name={key + '-edit'} 
+                        type='radio' 
+                        value={obj.value}
+                        checked={editState[key].value === obj.value}
+                        onChange={(event) => editSpecificElement(key, event.target.value, 'value')} 
+                        />
+                        <label className='radio-labels'>{obj.display}</label><br></br>
+                    </React.Fragment>
+                )
+            })
+
+            return (
+                <div className='radio-inputs'>
+                    {genederElements}
+                </div>
+            )
+        }
+    }
+
+    const renderEditablePersonalDetails = (elementsVal, key) => {
+        const editEnabled = editEnabledInfo === key;
+        const canEdit = PersonalInfoDispMetaData[key].canEdit;
+        return (
+            <React.Fragment>
+                <div className={(!editEnabled ? 'info-text-container':'displayNone')}
+                onMouseEnter={() => setShowEditFor(canEdit ? key: '')}
+                onMouseLeave={() => setShowEditFor('')}>
+                    <span className='personal-info-text'>
+                        {typeof elementsVal == 'object' ? elementsVal.display : elementsVal}
+                    </span>
+                    {showEditFor === key && (
+                        <button className='info-page-btn btn-edit'
+                        disabled={!canEdit}
+                        onClick={() => updateEditableInfoState(key)}
+                        >
+                                &#9998;
+                        </button>
+                    )}
+                </div>
+                <div className={(editEnabled ? 'editableDetails':' displayNone')}>
+                    {renderEditableInput(key)}
+                    <button className='info-page-btn btn-ok'
+                        disabled={errorInputs.includes(key)}
+                        onClick={saveDetails}
+                        >
+                            &#x2713;
+                    </button>
+                    <button className='info-page-btn btn-cancel'
+                        disabled={false} 
+                        onClick={() => updateEditableInfoState('')}
+                        >
+                            &#10005;
+                    </button>
+
+                </div>
+            </React.Fragment>
+        );
+    }
+
     const renderPersonalDetails = () => {
         var personDetailsArr = Object.keys(state.personalInfo)
-            .filter(key => Object.keys(PersonalInfoDispProp).includes(key) && ['text-input', 'radio-input'].includes(PersonalInfoDispProp[key].type))
+            .filter(key => Object.keys(PersonalInfoDispMetaData).includes(key) && ['text', 'radio'].includes(PersonalInfoDispMetaData[key].type))
             .map(key => {
                 var curVal = state.personalInfo[key];
                 return (
                     <div className='personal-details' key={'personal-details-' + key}>
-                        <label className='personal-info-label'>{PersonalInfoDispProp[key].label}</label><br></br><br></br>
-                        <span className='personal-info-text'>{typeof curVal == 'object' ? curVal.display : curVal}</span>
+                        <label className='personal-info-label'>{PersonalInfoDispMetaData[key].label}</label><br></br><br></br>
+                        {renderEditablePersonalDetails(curVal, key)}
                     </div>
                 )
             })
@@ -73,22 +190,13 @@ const PersonalInfo = () => {
     }
 
     const updateState = (newState) => {
-        //handle gender disp valu;
+        //handle gender disp value;
         let genderPersonalInfo = newState.personalInfo.gender;
-        let genderObj = PossibleGenderValues.filter(obj => obj.value === genderPersonalInfo.value).at(0);
+        let genderObj = PersonalInfoDispMetaData.gender.possibleValues.filter(obj => obj.value === genderPersonalInfo.value).at(0);
         genderPersonalInfo.display = genderObj.display;
 
         setState(newState);
-    }
-
-    const updatePersonalInfoStateOnUserInput = (key, value, subkey) => {
-        var prevState = {...state}
-        if (subkey)
-            prevState.personalInfo[key][subkey] = value;
-        else
-            prevState.personalInfo[key] = value;
-
-        updateState(prevState);
+        // setStateObjVal({...state.personalInfo});
     }
 
     const updatePersonalInfoStateWithServerResp = (resp) => {
@@ -97,6 +205,7 @@ const PersonalInfo = () => {
         var resp_data = resp.data;
         var newState = {...state};
 
+        console.log(resp_data);
         NullToEmptyStrConverter(resp_data)        
 
         var personalInfo = newState.personalInfo;
@@ -110,6 +219,7 @@ const PersonalInfo = () => {
 
         newState.incompleteDetailsExists = resp_data.incomplete_details_exist;
 
+        console.log('updated');
         updateState(newState);
     }
 
@@ -117,28 +227,14 @@ const PersonalInfo = () => {
         return (
             <PersonalInfoModal 
             show={state.incompleteDetailsExists} 
-            personalInfo={state.personalInfo} 
-            incompleteDetailsExists={state.incompleteDetailsExists}
-            updatePersonalInfoStateOnUserInput={updatePersonalInfoStateOnUserInput}
-            updatePersonalInfoStateWithServerResp={updatePersonalInfoStateWithServerResp}
+            personalInfo={editState} 
+            updatePersonalInfoStateOnUserInput={editSpecificElement}
+            updatePersonalInfoStateWithServerResp={saveDetails}
+            errorInputs={errorInputs}
             />
         )
     }
-
-    useEffect (() => {
-        async function getMyDetails(){
-            const response = await processUrl({
-                method: 'GET',
-                url:  'http://localhost:8080/getMyDetails',
-                withCredentials: true
-            })
-            updatePersonalInfoStateWithServerResp(response);
-        };
-
-        getMyDetails();
-
-    }, [])
-
+    
     return (
         
         <div className='main-content'>
@@ -150,48 +246,3 @@ const PersonalInfo = () => {
 }
 
 export default PersonalInfo;
-
-const PersonalInfoDispProp = {
-    displayName: {
-        label:'Display Name', 
-        type:'text-input', 
-        allowedStrPattern: /.+/, 
-        canEditInModal:true
-    },
-    phoneNumber: {
-        label:'Phone Name', 
-        type:'text-input', 
-        allowedStrPattern:/[1-9][0-9]{9}/, 
-        canEditInModal:false
-    },
-
-    //not mandatory
-    nickName: {
-        label:'Nick Name', 
-        type:'text-input', 
-        allowedStrPattern: /.+/, 
-        canEditInModal:true
-    },
-    email: {
-        label:'Email', 
-        type:'text-input', 
-        allowedStrPattern: /[^\s@]+@[^\s@]+\.[^\s@]+/, 
-        canEditInModal:true
-    },
-    gender: {
-        label:'Gender', 
-        type:'radio-input', 
-        canEditInModal:true,
-    },
-    photoUrl: {type: 'upload'}
-}
-
-const PossibleGenderValues = [
-    {value: 'male', display:'Male'}, 
-    {value: 'female', display:'Female'},
-    {value: 'not_mentioned', display: 'Not willing to provide my gender details'}
-]
-
-const MandatoryFields = ['displayName', 'phoneNumber']
-
-export {PersonalInfoDispProp, MandatoryFields, PossibleGenderValues}

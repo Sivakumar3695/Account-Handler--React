@@ -1,5 +1,5 @@
 import axios from "axios"
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import {AppContext} from "../context/app-context";
 
 // function handleAuthError(err)
@@ -28,32 +28,39 @@ config = {
 */
 
 export const useAxios = () => {
-    const [error, setError] = useState(null)
+    const [data, setData] = useState(null);
+    const [error, setError] = useState(null);
+    const [request, setRequest] = useState(null);
+    const [processing, setProcessing] = useState(false);
+
     const appContext = useContext(AppContext)
 
-    const fetchData = async (req) => {
-        try{
-            return await axios(req);
-        }
-        catch(err){
-            setError(err)
-            if(err.response && err.response.status === 401){
-                appContext.toggleAuthentication();
+    useEffect(() => {
+
+        const fetchData = async () => {
+            try{
+                const data =  await axios(request);
+                setData(data);
             }
-        }
+            catch(err){
+                setError(err)
+                if(err.response && err.response.status === 401){
+                    appContext.toggleAuthentication();
+                }
+            }
+            finally{
+                setProcessing(false);
+            }
+        };
+
+        if (request != null)
+            fetchData();
+    }, [request, processing])
+
+    const processUrl = (req) => {
+        setRequest(req)
+        setProcessing(true);
     }
 
-    // useEffect(() => {
-    //     if (processApi && request){
-    //         console.log('Cooolllsss.....');
-    //         fetchData();
-    //     }
-    //     setRequest(null);
-    // }, [processApi, request])
-
-    const processUrl = async (requestDetails) => {
-        return await fetchData(requestDetails);
-    }
-
-    return {processUrl};
+    return {data, processing, processUrl}
 }

@@ -25,5 +25,62 @@
 .personal-details {
   margin-top: 20px;
   margin-bottom: 20px;
-  width: 50%;
+  width: 46%;
+  padding: 0px 2%;
+}
+
+.personal-info-input {
+  height: fit-content;
+  width: 80%;
+  border: none;
+  box-shadow: none;
+  color: inherit;
+  font-size: inherit;
+  padding: 0px;
+}
+
+.personal-info-input:focus-visible {
+  border: none;
+  box-shadow: none;
+  outline: none;
+}
+
+.info-page-btn {
+  background-color: white;
+  border: none;
+  border-radius: none;
+  width: 10%;
+  height: fit-content;
+  font-weight: bold;
+  font-size: 20px;
+  cursor: pointer;
+  margin: auto;
+}
+
+.btn-edit {
+  color: black;
+}
+
+.btn-ok {
+  color: green;
+}
+
+.btn-cancel {
+  color: red;
+}
+
+.info-text-container {
+  height: 40px;
+}
+
+.btn-ok:disabled {
+  color: rgba(0, 128, 0, 0.295);
+}
+
+.radio-inputs {
+  width: 80%;
+}
+
+.editableDetails {
+  display: flex;
 }
