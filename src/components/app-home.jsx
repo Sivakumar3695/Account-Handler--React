@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Link, Outlet, Navigate} from 'react-router-dom';
 import '../styles/app-home.css'
 import { AppContext } from '../context/app-context';
+import Loader from './loader';
 
 const PERSONAL_INF_ELEMENT = 'personal-info'
 const MY_APP_ELEMENT = 'myapps'
@@ -53,7 +54,7 @@ class AppHome extends Component {
         )
     }
 
-    test(){
+    getNavLinksDom(){
         var navLinkDom = ELEMENT_INFO.map(element => {
             return this.renderNavLinks(element)
         })
@@ -62,9 +63,10 @@ class AppHome extends Component {
 
     renderAppHome(isUserAuthenticated){
         console.log(isUserAuthenticated);
-        if (isUserAuthenticated){
+        if (isUserAuthenticated || isUserAuthenticated == null){
             return (
                 <React.Fragment>
+                        {isUserAuthenticated === null && <Loader/>}
                         {this.navBar()}
                         {this.mainAppContentHolder()}
                 </React.Fragment>
@@ -78,7 +80,7 @@ class AppHome extends Component {
         return (
             <div className='top-navbar'>
                 <div className='nav-links'>
-                    {this.test()}
+                    {this.getNavLinksDom()}
                 </div>
             </div>
         )

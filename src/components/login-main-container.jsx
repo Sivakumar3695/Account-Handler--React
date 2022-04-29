@@ -1,8 +1,9 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect } from 'react';
 import axios from 'axios';
 import '../styles/login-container.css';
 import {Navigate} from 'react-router-dom';
 import { AppContext } from '../context/app-context';
+import Loader from './loader';
 // const navigate = useNavigate();
 
 
@@ -142,16 +143,23 @@ class LoginContainer extends Component {
     }
 
     loginRenderer(){
-        if (this.context.contextState.isUserAuthenticated)
+        const isUserAuthenticated = this.context.contextState.isUserAuthenticated;
+
+        if (isUserAuthenticated)
             return <Navigate to="/myinfo" replace/>
         else{
             return(
-                <div className='login-container'>
-                    {this.renderSignInWithGoogle()}
-                    {this.renderSignInWithFb()}
-                    <hr></hr>
-                    {this.renderCustomSignin()}
-                </div>
+                <React.Fragment>
+                    {isUserAuthenticated == null && (
+                        <Loader/>
+                    )}
+                    <div className='login-container'>
+                        {this.renderSignInWithGoogle()}
+                        {this.renderSignInWithFb()}
+                        <hr></hr>
+                        {this.renderCustomSignin()}
+                    </div>
+                </React.Fragment>
             )
         }
     }

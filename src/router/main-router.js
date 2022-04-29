@@ -10,13 +10,13 @@ const MainRouter = function(){
    return (
     <BrowserRouter>
         <Routes>
+            <Route path='login' element={<LoginContainer/>}/>
+            <Route path='/' element={<Navigate to='/myinfo' />} />
             <Route element={<AppHome/>}>
                 <Route path='myinfo' element={<PersonalInfo/>}/>
                 <Route path='myapps' element={<MyApps/>}/>
                 <Route path='sessions' element={<SessionInfo/>}/>
             </Route>
-                <Route path='/' element={<Navigate to='/myinfo' />} />
-                <Route path='/login' element={<LoginContainer/>}/>
         </Routes>
     </BrowserRouter>
    )

@@ -46,10 +46,13 @@ const PersonalInfo = () => {
         // updateStateWithData();
         if (data)
             updatePersonalInfoStateWithServerResp(data);
+        if (!processing)
+            setEditEnabledInfo('')
     }, [data, processing])
 
 
-    const saveDetails = () => {
+    const saveDetails = (event) => {
+        console.log(editState);
         processUrl({
             method: 'PUT',
             url: 'http://localhost:8080/updateMyDetails',
@@ -64,14 +67,23 @@ const PersonalInfo = () => {
                 'Content-Type' : 'application/json'
             }
         })
-        setEditEnabledInfo('')
+        event.target.classList.add('btn-loading')
+        event.target.classList.remove('btn-ok')
+        // setEditEnabledInfo('')
     }
 
     const renderImage = () => {
         var imgUrl = state.personalInfo.photoUrl !== '' ? state.personalInfo.photoUrl : process.env.PUBLIC_URL + '/images/default-profile-icon.jpg';
         return (
             <div className='profile-pic-holder'>
-                <img className='profile-pic' width="30%"src={imgUrl} alt='Not Found'/>
+                <div className='profile-pic-plus-edit-button'>
+                    <img className='profile-pic' width="30%"src={imgUrl} alt='Not Found'/>
+                    <button className='info-page-btn btn-edit'
+                            // onClick={() => updateEditableInfoState(key)}
+                            >
+                                    EDIT
+                            </button>
+                </div>
             </div>
         )
     }
@@ -90,14 +102,17 @@ const PersonalInfo = () => {
 
     const renderEditableInput = (key) => {
         if (PersonalInfoDispMetaData[key].type === 'text'){
-           return (
+            
+            const classNames = processing ? 'personal-info-input info-input-disabled' : 'personal-info-input'
+            return (
             <input 
                 id={key + "-input"} 
                 type={"text"}
-                className='personal-info-input' 
+                className={classNames} 
                 value={editState[key]}
                 onChange={(event) => editSpecificElement(key, event.target.value)}
                 autoFocus={true}
+                disabled={processing}
             />
            )
         }
@@ -111,7 +126,8 @@ const PersonalInfo = () => {
                         type='radio' 
                         value={obj.value}
                         checked={editState[key].value === obj.value}
-                        onChange={(event) => editSpecificElement(key, event.target.value, 'value')} 
+                        onChange={(event) => editSpecificElement(key, event.target.value, 'value')}
+                        disabled={processing} 
                         />
                         <label className='radio-labels'>{obj.display}</label><br></br>
                     </React.Fragment>
@@ -129,39 +145,45 @@ const PersonalInfo = () => {
     const renderEditablePersonalDetails = (elementsVal, key) => {
         const editEnabled = editEnabledInfo === key;
         const canEdit = PersonalInfoDispMetaData[key].canEdit;
+
         return (
             <React.Fragment>
-                <div className={(!editEnabled ? 'info-text-container':'displayNone')}
-                onMouseEnter={() => setShowEditFor(canEdit ? key: '')}
-                onMouseLeave={() => setShowEditFor('')}>
-                    <span className='personal-info-text'>
-                        {typeof elementsVal == 'object' ? elementsVal.display : elementsVal}
-                    </span>
-                    {showEditFor === key && (
-                        <button className='info-page-btn btn-edit'
-                        disabled={!canEdit}
-                        onClick={() => updateEditableInfoState(key)}
-                        >
-                                &#9998;
-                        </button>
-                    )}
-                </div>
-                <div className={(editEnabled ? 'editableDetails':' displayNone')}>
-                    {renderEditableInput(key)}
-                    <button className='info-page-btn btn-ok'
-                        disabled={errorInputs.includes(key)}
-                        onClick={saveDetails}
-                        >
-                            &#x2713;
-                    </button>
-                    <button className='info-page-btn btn-cancel'
-                        disabled={false} 
-                        onClick={() => updateEditableInfoState('')}
-                        >
-                            &#10005;
-                    </button>
+                {!editEnabled && (
+                    <div className={'info-text-container'}
+                    onMouseEnter={() => setShowEditFor(canEdit ? key: '')}
+                    onMouseLeave={() => setShowEditFor('')}>
+                        <span className='personal-info-text'>
+                            {typeof elementsVal == 'object' ? elementsVal.display : elementsVal}
+                        </span>
+                        {showEditFor === key && (
+                            <button className='info-page-btn btn-edit'
+                            disabled={!canEdit}
+                            onClick={() => updateEditableInfoState(key)}
+                            >
+                                    &#9998;
+                            </button>
+                        )}
+                    </div>
+                )}
 
-                </div>
+                {editEnabled && (
+                    <div className={'editableDetails'}>
+                        {renderEditableInput(key)}
+                        <button className={processing ? 'info-page-btn btn-loading' : 'info-page-btn btn-ok'}
+                            disabled={errorInputs.includes(key)}
+                            onClick={saveDetails}
+                            >
+                                
+                        </button>
+                        <button className='info-page-btn btn-cancel'
+                            disabled={false} 
+                            onClick={() => updateEditableInfoState('')}
+                            >
+                                &#10005;
+                        </button>
+
+                    </div>
+                )}      
             </React.Fragment>
         );
     }
@@ -200,6 +222,7 @@ const PersonalInfo = () => {
     }
 
     const updatePersonalInfoStateWithServerResp = (resp) => {
+        console.log('updating state...');
         if (resp == null || resp.status != 200)
             return
         var resp_data = resp.data;

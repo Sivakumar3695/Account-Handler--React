@@ -36,15 +36,17 @@ export const useAxios = () => {
     const appContext = useContext(AppContext)
 
     useEffect(() => {
-
+        console.log(appContext);
+        const isUserAuthDecided = appContext.contextState.isUserAuthenticated != null
+        console.log(isUserAuthDecided);
         const fetchData = async () => {
             try{
-                const data =  await axios(request);
-                setData(data);
+                if (isUserAuthDecided)
+                    setData(await axios(request));
             }
             catch(err){
                 setError(err)
-                if(err.response && err.response.status === 401){
+                if(err.response && err.response.status === 401 && isUserAuthDecided){
                     appContext.toggleAuthentication();
                 }
             }
@@ -55,7 +57,8 @@ export const useAxios = () => {
 
         if (request != null)
             fetchData();
-    }, [request, processing])
+            // setTimeout(fetchData, 5000)
+    }, [request, processing, appContext.contextState.isUserAuthenticated])
 
     const processUrl = (req) => {
         setRequest(req)

@@ -2,11 +2,11 @@
   border-bottom: 2px solid #4e9297;
   padding: 5px;
   padding-bottom: 20px;
+  text-align: center;
 }
 
 .profile-pic {
   margin: auto;
-  display: block;
   border-radius: 50%;
 }
 
@@ -83,4 +83,29 @@
 
 .editableDetails {
   display: flex;
+}
+
+.profile-pic-plus-edit-button {
+  margin: auto;
+  width: fit-content;
+}
+
+.btn-ok::after {
+  content: "\2713";
+}
+
+.btn-loading::after {
+  content: " ";
+  display: block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 3px solid #009688;
+  border-left-color: transparent;
+  animation: spin 0.3s infinite linear;
+}
+
+input.info-input-disabled:disabled {
+  color: #85aca9;
+  background-color: transparent;
 }
