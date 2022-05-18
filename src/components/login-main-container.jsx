@@ -64,7 +64,7 @@ const LoginContainer = () => {
         
         event.target.classList.add('btn-loading');
 
-        axios.post('http://localhost:8080/sendOTP', null, {
+        axios.post(process.env.REACT_APP_SERVER_URL_BASE + '/sendOTP', null, {
             params:{
                 phoneNumber: editState.mobileNumber
             }
@@ -93,7 +93,7 @@ const LoginContainer = () => {
         formData.append('otp', editState.otp);
         event.target.classList.add('btn-loading')
 
-        axios.post('http://localhost:8080/verifyOTP', formData,
+        axios.post(process.env.REACT_APP_SERVER_URL_BASE + '/verifyOTP', formData,
         {
             withCredentials: true
         })

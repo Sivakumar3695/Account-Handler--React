@@ -34,7 +34,7 @@ export default function GoogleSigninBtn() {
         setGsiScriptLoaded(true)
         
         window.google.accounts.id.initialize({
-          client_id: '843919078944-ej9pr652l5bamh29nsdoecmdml5d6fvb',
+          client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
           callback: handleGoogleSignIn,
         })
 
@@ -59,7 +59,7 @@ export default function GoogleSigninBtn() {
         
         processUrl({
             method: 'POST',
-            url: 'http://localhost:8080/tokenlogin/google',
+            url: process.env.REACT_APP_SERVER_URL_BASE + '/tokenlogin/google',
             withCredentials : true,
             data: actualPayload,
             headers: {
@@ -97,7 +97,7 @@ export default function GoogleSigninBtn() {
                 data-width="350">
             </div>
         </div>
-        // <a href="http://localhost:8080/oauth2/authorization/google">Sign in with Google</a>
+        // <a href=process.env.REACT_APP_SERVER_URL_BASE + "/oauth2/authorization/google">Sign in with Google</a>
     )
 
 }

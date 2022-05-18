@@ -44,7 +44,7 @@ const UploadPhoto = (props) => {
         processUrl({ 
             
             method: 'POST',
-            url: 'http://localhost:8080/updateProfilePicture',
+            url: process.env.REACT_APP_SERVER_URL_BASE + '/updateProfilePicture',
             headers:{
                 "Content-Type": "multipart/form-data",
             }, 

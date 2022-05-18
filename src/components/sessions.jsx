@@ -17,7 +17,7 @@ const SessionInfo = () => {
 
             processUrl({
                 method: 'GET',
-                url:  'http://localhost:8080/getActiveSessions',
+                url:  process.env.REACT_APP_SERVER_URL_BASE + '/getActiveSessions',
                 withCredentials: true
             })
 
@@ -49,14 +49,14 @@ const SessionInfo = () => {
         if (device.this_device){
             processUrl({
                 method: 'POST',
-                url: 'http://localhost:8080/logout',
+                url: process.env.REACT_APP_SERVER_URL_BASE + '/logout',
                 withCredentials: true
             })   
         }
         else{
             processUrl({
                 method: 'POST',
-                url: 'http://localhost:8080/signOut',
+                url: process.env.REACT_APP_SERVER_URL_BASE + '/signOut',
                 data: {
                     device_id: device.device_id
                 },

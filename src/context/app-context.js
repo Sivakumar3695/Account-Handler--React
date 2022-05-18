@@ -15,9 +15,10 @@ const AppContextProvider = (props) => {
     useEffect(() => {
         const callAuthCheckApi = async() => {
             try{
+                console.log(process.env.REACT_APP_SERVER_URL_BASE + '/');
                 await axios({
                     method: 'GET',
-                    url:  'http://localhost:8080/',
+                    url:  process.env.REACT_APP_SERVER_URL_BASE + '/',
                     withCredentials: true
                 });
                 setIsUserAuthenticated(true)

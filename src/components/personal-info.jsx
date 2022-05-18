@@ -42,7 +42,7 @@ const PersonalInfo = () => {
         
         processUrl({
             method: 'GET',
-            url:  'http://localhost:8080/getMyDetails',
+            url:  process.env.REACT_APP_SERVER_URL_BASE + '/getMyDetails',
             withCredentials: true
         })
         
@@ -53,7 +53,7 @@ const PersonalInfo = () => {
         const response = getData();
         console.log(response);
         if (response && !processing){
-            setPhotoUrl('http://localhost:8080/getProfilePicture')
+            setPhotoUrl(process.env.REACT_APP_SERVER_URL_BASE + '/getProfilePicture')
             updatePersonalInfoStateWithServerResp(response);
             setEditEnabledInfo('')
         }
@@ -67,7 +67,7 @@ const PersonalInfo = () => {
 
         processUrl({
             method: 'PUT',
-            url: 'http://localhost:8080/updateMyDetails',
+            url: process.env.REACT_APP_SERVER_URL_BASE +'/updateMyDetails',
             withCredentials : true,
             data: {
                 'display_name' : editState.displayName,
@@ -285,7 +285,7 @@ const PersonalInfo = () => {
     }
 
     const closePhotoUploadModal = () => {
-        setPhotoUrl('http://localhost:8080/getProfilePicture');
+        setPhotoUrl(process.env.REACT_APP_SERVER_URL_BASE + '/getProfilePicture');
         setUploadPhoto(false)
     }
 
