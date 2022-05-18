@@ -1,0 +1,97 @@
+.button {
+  padding: 15px;
+  width: fit-content;
+  cursor: pointer;
+  color: white;
+  background-color: black;
+  text-align: center;
+  margin: auto;
+  border: none;
+  font-size: inherit;
+  font-weight: bold;
+  cursor: pointer;
+  /* display: flex; */
+}
+
+.btn-loading,
+.button:disabled {
+  opacity: 0.3;
+}
+
+.border-curved {
+  border-radius: 5px;
+}
+
+.btn-primary {
+  background-color: #051a8d;
+}
+
+.btn-primary-light {
+  background-color: blue;
+}
+
+.btn-holder {
+  margin: 10px;
+  width: 100%;
+  display: flex;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.btn-xx-small {
+  font-size: xx-small;
+  padding: 5px;
+}
+
+.btn-larger {
+  font-size: larger;
+}
+
+.icon-btn {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: large;
+  font-weight: bold;
+}
+
+.clear-margin {
+  margin: unset;
+}
+
+.icon-btn:disabled {
+  opacity: 0.1;
+}
+
+.right {
+  float: right;
+}
+
+.btn-ok::after {
+  content: "\2713";
+  color: green;
+}
+
+.btn-cancel::after {
+  color: red;
+  content: "\2715";
+}
+
+.button.btn-loading {
+  display: flex;
+  justify-content: center;
+}
+
+.btn-loading::after {
+  content: " ";
+  margin: 0px 0px 0px 10px;
+  display: block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 3px solid;
+  border-left-color: transparent;
+  animation: spin 0.3s infinite linear;
+}

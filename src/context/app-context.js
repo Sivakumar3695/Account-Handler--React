@@ -1,10 +1,12 @@
-import React, { Component, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from "axios"
+
 export const AppContext = React.createContext();
 
 
 const AppContextProvider = (props) => {
     const [isUserAuthenticated, setIsUserAuthenticated] = useState(null)
+    const [alert, setAlert] = useState({show: false, message: '', severity: 'info'});
 
     const toggleUserAuthentication = () => {
         setIsUserAuthenticated(!isUserAuthenticated)
@@ -34,7 +36,9 @@ const AppContextProvider = (props) => {
 
     return (
         <AppContext.Provider value={
-            {contextState:{isUserAuthenticated: isUserAuthenticated}, toggleAuthentication: toggleUserAuthentication}
+            {contextState:{isUserAuthenticated: isUserAuthenticated, alert: alert}, 
+            toggleAuthentication: toggleUserAuthentication,
+            setAlert: setAlert}
         }>
             {props.children}
         </AppContext.Provider>

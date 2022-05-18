@@ -7,10 +7,10 @@ const PersonalInfoDispMetaData = {
         isMandatory: true
     },
     phoneNumber: {
-        label:'Phone Name', 
+        label:'Phone Number', 
         type:'text', 
         allowedStrPattern:/[1-9][0-9]{9}/, 
-        canEdit:false,
+        canEdit:true, //need to handle it.
         isMandatory: true
     },
 

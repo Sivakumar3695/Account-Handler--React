@@ -1,8 +1,7 @@
-import axios from 'axios';
-import React, { Component, useCallback, useEffect, useState } from 'react';
-import '../styles/personal-info-modal.css';
-import { useAxios } from '../utils/request-utils';
+import React from 'react';
 import {PersonalInfoDispMetaData} from '../metadata/personal-info'
+import { Btn } from './common/button';
+import CustomModal from './common/modal';
 
 const PersonalInfoModal = (props) => {
 
@@ -24,7 +23,7 @@ const PersonalInfoModal = (props) => {
                     value={props.personalInfo[key]} 
                     onChange={(event) => props.updatePersonalInfoStateOnUserInput(key, event.target.value)}
                     onBlur={(event) => updateErrInputClassList(event, key)}
-                    disabled={!PersonalInfoDispMetaData[key].canEdit}
+                    disabled={!PersonalInfoDispMetaData[key].canEdit && props.personalInfo[key] && !props.errorInputs.includes(key)}
                 />
             </div>
         );
@@ -32,7 +31,7 @@ const PersonalInfoModal = (props) => {
 
     const renderModalTextElements = () => {
         let modalElements = Object.keys(props.personalInfo)
-            .filter(key => PersonalInfoDispMetaData[key].type == 'text')
+            .filter(key => PersonalInfoDispMetaData[key].type === 'text')
             .map(key => {
                 let isMandatory = PersonalInfoDispMetaData[key].isMandatory;
                 return modalTextElement(key, isMandatory);
@@ -68,36 +67,27 @@ const PersonalInfoModal = (props) => {
         );
     }
 
-    const RenderSaveButton = () => {
-
+    const SaveButton = () => {
+        
+        console.log(props.loading);
         return (
-                <button className='save-btn'
-                onClick={props.updatePersonalInfoStateWithServerResp}
-                disabled={props.errorInputs.length != 0}
-                >
-                    Save
-                </button>            
+            <Btn 
+                id='personal-info-save'
+                displayContent="Save"
+                properties='btn-primary border-curved'
+                onClick={props.saveDetails} 
+                center={true}
+                loading={props.loading}
+                isDisabled={props.errorInputs.length !== 0} />           
         )
     }
 
-    var classNames = props.show ? "modal-sketch modal-show" : "modal-hide"
     return (
-        <div id="modal-container" className={classNames}>
-            <div className='modal-background'>
-                <div className="modal">    
-                    <div className='modal-elements'>
-                        {renderModalTextElements()}
-                        {renderGenderOptions()}
-                    </div>
-                    <div className='modal-save-btn'>
-                        {RenderSaveButton()}
-                    </div>
-                    <svg className="modal-svg" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" preserveAspectRatio="none">
-						<rect x="0" y="0" fill="none" width="100%" height="100%" strokeDasharray='100%' strokeDashoffset='100%' rx="3" ry="3"></rect>
-					</svg>
-                </div>
-            </div>
-        </div>
+        <CustomModal id='personal-info' show={props.show} customModalElementClass='modal-disp-flex'>
+            {renderModalTextElements()}
+            {renderGenderOptions()}
+            <SaveButton/>
+        </CustomModal>
     );
 }
 

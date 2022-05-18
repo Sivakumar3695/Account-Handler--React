@@ -1,4 +1,4 @@
-import React, { Component, useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PersonalInfoModal from './personal-info-modal';
 import '../styles/personal-info.css';
 import '../styles/App.css';
@@ -6,6 +6,8 @@ import { NullToEmptyStrConverter } from '../utils/response-utils';
 import { useAxios } from '../utils/request-utils';
 import useInputHandler from '../utils/input-hook';
 import {PersonalInfoDispMetaData} from '../metadata/personal-info'
+import UploadPhoto from './photoUpload';
+import { Btn } from './common/button';
 
 
 const PersonalInfo = () => {
@@ -18,7 +20,7 @@ const PersonalInfo = () => {
                 //not mandatory
                 nickName: '',
                 email: '',
-                photoUrl: '',
+                // photoUrl: process.env.PUBLIC_URL + '/images/default-profile-icon.jpg',
                 gender: {
                     value: 'not_mentioned', 
                     display: '', 
@@ -31,28 +33,38 @@ const PersonalInfo = () => {
     const [editEnabledInfo, setEditEnabledInfo] = useState('')
     const [showEditFor, setShowEditFor] = useState('')
     const {errorInputs, editState, editSpecificElement} = useInputHandler(state.personalInfo, PersonalInfoDispMetaData);
-    const {data, processing, processUrl} = useAxios();
+    const {getData, processing, processUrl} = useAxios();
 
+    const [photoUrl, setPhotoUrl] = useState(process.env.PUBLIC_URL + '/images/default-profile-icon.jpg')
+    const [uploadPhoto, setUploadPhoto] = useState(false)
 
     useEffect(() => {
+        
         processUrl({
             method: 'GET',
             url:  'http://localhost:8080/getMyDetails',
             withCredentials: true
-        })  
+        })
+        
+        console.log('processing');
     },[])
 
     useEffect(() => {
-        // updateStateWithData();
-        if (data)
-            updatePersonalInfoStateWithServerResp(data);
-        if (!processing)
+        const response = getData();
+        console.log(response);
+        if (response && !processing){
+            setPhotoUrl('http://localhost:8080/getProfilePicture')
+            updatePersonalInfoStateWithServerResp(response);
             setEditEnabledInfo('')
-    }, [data, processing])
+        }
+        else if (!processing)
+            setEditEnabledInfo('')
+    }, [processing])
 
 
     const saveDetails = (event) => {
-        console.log(editState);
+        console.log(event);
+
         processUrl({
             method: 'PUT',
             url: 'http://localhost:8080/updateMyDetails',
@@ -61,28 +73,37 @@ const PersonalInfo = () => {
                 'display_name' : editState.displayName,
                 'nick_name' : editState.nickName,
                 'email_id' : editState.email,
-                'gender' : editState.gender.value
+                'gender' : editState.gender.value,
+                'phone_number': editState.phoneNumber
             },
             headers: {
                 'Content-Type' : 'application/json'
             }
         })
-        event.target.classList.add('btn-loading')
+
         event.target.classList.remove('btn-ok')
         // setEditEnabledInfo('')
     }
 
-    const renderImage = () => {
-        var imgUrl = state.personalInfo.photoUrl !== '' ? state.personalInfo.photoUrl : process.env.PUBLIC_URL + '/images/default-profile-icon.jpg';
+    const imageHolder = () => {
         return (
             <div className='profile-pic-holder'>
+                <img className='profile-pic' width="100%" height="100%" src={photoUrl} alt='Not Found'/>
+            </div>
+        )
+    }
+
+    const renderImageContainer = () => {
+        return (
+            <div className='profile-pic-container'>
                 <div className='profile-pic-plus-edit-button'>
-                    <img className='profile-pic' width="30%"src={imgUrl} alt='Not Found'/>
-                    <button className='info-page-btn btn-edit'
-                            // onClick={() => updateEditableInfoState(key)}
-                            >
-                                    EDIT
-                            </button>
+                    {imageHolder()}
+                    <Btn 
+                        displayContent="EDIT"
+                        properties='btn-xx-small btn-primary border-curved clear-margin'
+                        onClick={() => setUploadPhoto(true)}
+                        // properties="btn-xx-small border-curved"
+                    />
                 </div>
             </div>
         )
@@ -156,12 +177,11 @@ const PersonalInfo = () => {
                             {typeof elementsVal == 'object' ? elementsVal.display : elementsVal}
                         </span>
                         {showEditFor === key && (
-                            <button className='info-page-btn btn-edit'
-                            disabled={!canEdit}
+                            <Btn 
+                            displayContent="EDIT"
                             onClick={() => updateEditableInfoState(key)}
-                            >
-                                    &#9998;
-                            </button>
+                            properties="btn-xx-small border-curved"
+                            isDisabled={!canEdit}/>
                         )}
                     </div>
                 )}
@@ -169,18 +189,19 @@ const PersonalInfo = () => {
                 {editEnabled && (
                     <div className={'editableDetails'}>
                         {renderEditableInput(key)}
-                        <button className={processing ? 'info-page-btn btn-loading' : 'info-page-btn btn-ok'}
-                            disabled={errorInputs.includes(key)}
+                        
+                        <Btn 
+                            displayContent=''
+                            iconBtn={true}
                             onClick={saveDetails}
-                            >
-                                
-                        </button>
-                        <button className='info-page-btn btn-cancel'
-                            disabled={false} 
+                            properties={processing ? 'btn-loading' : 'btn-ok'}
+                            isDisabled={errorInputs.includes(key)} />
+
+                        <Btn 
+                            displayContent=''
+                            iconBtn={true}
                             onClick={() => updateEditableInfoState('')}
-                            >
-                                &#10005;
-                        </button>
+                            properties='btn-cancel' />
 
                     </div>
                 )}      
@@ -221,18 +242,20 @@ const PersonalInfo = () => {
         // setStateObjVal({...state.personalInfo});
     }
 
-    const updatePersonalInfoStateWithServerResp = (resp) => {
-        console.log('updating state...');
-        if (resp == null || resp.status != 200)
+    const updatePersonalInfoStateWithServerResp = (response) => {
+        if (response.data == null || response.status !== 200)
             return
-        var resp_data = resp.data;
+        const responseData = response.data;
+        var resp_user_det = responseData.user_details;
+
+        if (!resp_user_det)
+            return
+        
         var newState = {...state};
-
-        console.log(resp_data);
-        NullToEmptyStrConverter(resp_data)        
-
+        
+        NullToEmptyStrConverter(responseData)        
+    
         var personalInfo = newState.personalInfo;
-        var resp_user_det = resp_data.user_details;
         personalInfo.displayName = resp_user_det.display_name;
         personalInfo.nickName = resp_user_det.nick_name;
         personalInfo.email = resp_user_det.email_id;
@@ -240,30 +263,54 @@ const PersonalInfo = () => {
         personalInfo.gender.display = resp_user_det.gender_display_name;
         personalInfo.phoneNumber = resp_user_det.phone_number;
 
-        newState.incompleteDetailsExists = resp_data.incomplete_details_exist;
+        newState.incompleteDetailsExists = responseData.incomplete_details_exist;
 
-        console.log('updated');
         updateState(newState);
+
+        // setIsPhoneNumVerified(!resp_data.is_phone_number_verification_pending)
+        // setIsEmailVerified(!resp_data.is_email_verification_pending)
     }
 
-    const handleModalPopup = () => {
+    const handleInfoEditModalPopup = () => {
         return (
             <PersonalInfoModal 
-            show={state.incompleteDetailsExists} 
-            personalInfo={editState} 
-            updatePersonalInfoStateOnUserInput={editSpecificElement}
-            updatePersonalInfoStateWithServerResp={saveDetails}
-            errorInputs={errorInputs}
+                show={state.incompleteDetailsExists} 
+                personalInfo={editState} 
+                updatePersonalInfoStateOnUserInput={editSpecificElement}
+                saveDetails={saveDetails}
+                errorInputs={errorInputs}
+                loading={processing}
             />
         )
     }
+
+    const closePhotoUploadModal = () => {
+        setPhotoUrl('http://localhost:8080/getProfilePicture');
+        setUploadPhoto(false)
+    }
+
+    const handlePhotEditModal = () => {
+        return (
+            <UploadPhoto 
+            show={uploadPhoto}
+            photoUrl={photoUrl}
+            serverResponse={getData}
+            updatePic={setPhotoUrl}
+            closeModal={closePhotoUploadModal}
+            />
+        )
+    }
+
+
     
     return (
         
         <div className='main-content'>
-                {renderImage()}
+                {renderImageContainer()}
                 {renderDetailsHolder()}
-                {handleModalPopup()}
+                {handleInfoEditModalPopup()}
+
+                {uploadPhoto && handlePhotEditModal()}
         </div>
     )
 }

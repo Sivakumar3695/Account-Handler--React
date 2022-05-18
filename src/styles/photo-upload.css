@@ -1,0 +1,56 @@
+.modal.photo-upload-modal {
+  width: 18%;
+  padding: 30px;
+}
+
+label.preview {
+  background-color: #1172c2;
+  color: white;
+  padding: 5px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+label.upload {
+  background-color: #c6e2ff47;
+  color: #1172c2;
+  padding: 5px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  border: 1px solid;
+}
+
+label.upload.disabled {
+  opacity: 0.3;
+}
+
+.vertical-space {
+  margin-top: 30px;
+}
+
+.horizontal-space {
+  margin-right: 30px;
+}
+
+.loading {
+  opacity: 0.4;
+}
+
+.loading::after {
+  content: " ";
+  display: inline-flex;
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  border: solid currentColor;
+  border-left-color: transparent;
+  animation: spin 0.3s infinite linear;
+  align-content: center;
+  margin-left: 10px;
+  /* align-items: center; */
+  vertical-align: text-bottom;
+}

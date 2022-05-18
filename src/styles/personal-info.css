@@ -1,13 +1,24 @@
-.profile-pic-holder {
+.profile-pic-container {
   border-bottom: 2px solid #4e9297;
   padding: 5px;
   padding-bottom: 20px;
   text-align: center;
 }
 
+.profile-pic-holder {
+  width: 8em;
+  height: 8em;
+  border-radius: 50%;
+  margin: auto;
+}
+
 .profile-pic {
   margin: auto;
   border-radius: 50%;
+}
+
+.personal-info-text {
+  padding-right: 15px;
 }
 
 .personal-info-label {
@@ -45,36 +56,8 @@
   outline: none;
 }
 
-.info-page-btn {
-  background-color: white;
-  border: none;
-  border-radius: none;
-  width: 10%;
-  height: fit-content;
-  font-weight: bold;
-  font-size: 20px;
-  cursor: pointer;
-  margin: auto;
-}
-
-.btn-edit {
-  color: black;
-}
-
-.btn-ok {
-  color: green;
-}
-
-.btn-cancel {
-  color: red;
-}
-
 .info-text-container {
   height: 40px;
-}
-
-.btn-ok:disabled {
-  color: rgba(0, 128, 0, 0.295);
 }
 
 .radio-inputs {
@@ -88,24 +71,29 @@
 .profile-pic-plus-edit-button {
   margin: auto;
   width: fit-content;
-}
-
-.btn-ok::after {
-  content: "\2713";
-}
-
-.btn-loading::after {
-  content: " ";
-  display: block;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  border: 3px solid #009688;
-  border-left-color: transparent;
-  animation: spin 0.3s infinite linear;
+  display: flex;
+  align-items: flex-end;
 }
 
 input.info-input-disabled:disabled {
   color: #85aca9;
   background-color: transparent;
+}
+
+/* modal related */
+
+.personal-info-modal-input {
+  height: 40px;
+  width: 80%;
+  border: 1px solid #e0dede;
+  box-shadow: 1px 0px 4px 2px #ececec;
+  color: #050505cf;
+  font-size: 16px;
+  padding-left: 10px;
+}
+
+.personal-info-modal-input:focus-visible {
+  border: 1px solid #009688;
+  box-shadow: 1px 0px 4px 2px #e4fcf99d;
+  outline: none;
 }

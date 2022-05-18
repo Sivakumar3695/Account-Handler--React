@@ -8,7 +8,7 @@ const useInputHandler = (stateValObj, allowedPatternObj) => {
 
 
     useEffect(() => {
-        var errInputs = new Array()
+        var errInputs = []
         errInputs.push(...errInputs)
 
         Object.keys(editState)
@@ -19,10 +19,11 @@ const useInputHandler = (stateValObj, allowedPatternObj) => {
                     errInputs.push(key);
                 }
                 else{
-                    errInputs = errInputs.filter(e => e != key);
+                    errInputs = errInputs.filter(e => e !== key);
                 }
                 
                 setErrorInputs(errInputs);
+                return
             })
     }, [editState])
 
