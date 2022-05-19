@@ -1,13 +1,24 @@
-.profile-pic-holder {
+.profile-pic-container {
   border-bottom: 2px solid #4e9297;
   padding: 5px;
   padding-bottom: 20px;
+  text-align: center;
+}
+
+.profile-pic-holder {
+  width: 8em;
+  height: 8em;
+  border-radius: 50%;
+  margin: auto;
 }
 
 .profile-pic {
   margin: auto;
-  display: block;
   border-radius: 50%;
+}
+
+.personal-info-text {
+  padding-right: 15px;
 }
 
 .personal-info-label {
@@ -25,5 +36,64 @@
 .personal-details {
   margin-top: 20px;
   margin-bottom: 20px;
-  width: 50%;
+  width: 46%;
+  padding: 0px 2%;
+}
+
+.personal-info-input {
+  height: fit-content;
+  width: 80%;
+  border: none;
+  box-shadow: none;
+  color: inherit;
+  font-size: inherit;
+  padding: 0px;
+}
+
+.personal-info-input:focus-visible {
+  border: none;
+  box-shadow: none;
+  outline: none;
+}
+
+.info-text-container {
+  height: 40px;
+}
+
+.radio-inputs {
+  width: 80%;
+}
+
+.editableDetails {
+  display: flex;
+}
+
+.profile-pic-plus-edit-button {
+  margin: auto;
+  width: fit-content;
+  display: flex;
+  align-items: flex-end;
+}
+
+input.info-input-disabled:disabled {
+  color: #85aca9;
+  background-color: transparent;
+}
+
+/* modal related */
+
+.personal-info-modal-input {
+  height: 40px;
+  width: 80%;
+  border: 1px solid #e0dede;
+  box-shadow: 1px 0px 4px 2px #ececec;
+  color: #050505cf;
+  font-size: 16px;
+  padding-left: 10px;
+}
+
+.personal-info-modal-input:focus-visible {
+  border: 1px solid #009688;
+  box-shadow: 1px 0px 4px 2px #e4fcf99d;
+  outline: none;
 }

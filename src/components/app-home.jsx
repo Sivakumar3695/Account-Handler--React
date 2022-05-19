@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
-import { Link, Outlet} from 'react-router-dom';
+import { Link, Outlet, Navigate} from 'react-router-dom';
 import '../styles/app-home.css'
+import { AppContext } from '../context/app-context';
+import Loader from './common/loader';
 
 const PERSONAL_INF_ELEMENT = 'personal-info'
 const MY_APP_ELEMENT = 'myapps'
@@ -52,18 +54,33 @@ class AppHome extends Component {
         )
     }
 
-    test(){
+    getNavLinksDom(){
         var navLinkDom = ELEMENT_INFO.map(element => {
             return this.renderNavLinks(element)
         })
         return navLinkDom;
     }
 
+    renderAppHome(isUserAuthenticated){
+        console.log(isUserAuthenticated);
+        if (isUserAuthenticated || isUserAuthenticated == null){
+            return (
+                <React.Fragment>
+                        {isUserAuthenticated === null && <Loader/>}
+                        {this.navBar()}
+                        {this.mainAppContentHolder()}
+                </React.Fragment>
+            )
+        }
+
+        return <Navigate to="/login" replace />
+    }
+
     navBar(){
         return (
             <div className='top-navbar'>
                 <div className='nav-links'>
-                    {this.test()}
+                    {this.getNavLinksDom()}
                 </div>
             </div>
         )
@@ -72,18 +89,20 @@ class AppHome extends Component {
     mainAppContentHolder(){
         return (
             <div className='main-app-content-holder'>
-                <Outlet/>
+                <div className='main-content'>
+                    <Outlet/>
+                </div>
             </div>
         )
     }
 
     render() { 
         return (
-            
-            <React.Fragment>
-                {this.navBar()}
-                {this.mainAppContentHolder()}
-            </React.Fragment>
+            <AppContext.Consumer>{
+                ({contextState}) => (
+                    this.renderAppHome(contextState.isUserAuthenticated)
+                )}
+            </AppContext.Consumer>
         );
     }
 }

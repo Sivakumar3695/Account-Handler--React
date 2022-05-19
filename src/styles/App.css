@@ -17,9 +17,45 @@ body {
   height: 100%;
 }
 
+.radio-labels {
+  text-align: center;
+  padding: 10px;
+  align-items: center;
+  align-content: center;
+  color: #404342;
+}
+
+input:disabled {
+  background-color: #e9e8e8;
+}
+
+input.input-error {
+  border: 1px solid red;
+}
+
 #root {
   height: 100%;
   display: flex;
   align-items: center;
   flex-direction: column;
+  /* transform: scale(0);
+  animation: zoomIn 0.5s 0.5s linear forwards; */
+}
+
+@keyframes zoomIn {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  /* 99.9% {
+    transform: scale(1);
+  } */
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.displayNone {
+  display: none;
 }
