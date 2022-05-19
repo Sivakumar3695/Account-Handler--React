@@ -37,14 +37,16 @@ const PersonalInfo = () => {
     const {errorInputs, editState, editSpecificElement} = useInputHandler(state.personalInfo, PersonalInfoDispMetaData);
     const {getData, processing, processUrl} = useAxios();
 
-    const [photoUrl, setPhotoUrl] = useState(process.env.REACT_APP_SERVER_URL_BASE + '/getProfilePicture')
+    const PROFILE_PIC_URL = process.env.REACT_APP_SERVER_URL_BASE + '/users/me/profile-picture';
+
+    const [photoUrl, setPhotoUrl] = useState(PROFILE_PIC_URL)
     const [uploadPhoto, setUploadPhoto] = useState(false)
 
     useEffect(() => {
         
         processUrl({
             method: 'GET',
-            url:  process.env.REACT_APP_SERVER_URL_BASE + '/getMyDetails',
+            url:  process.env.REACT_APP_SERVER_URL_BASE + '/users/me',
             withCredentials: true
         })
         
@@ -55,7 +57,7 @@ const PersonalInfo = () => {
         const response = getData();
         console.log(response);
         if (response && !processing){
-            setPhotoUrl(process.env.REACT_APP_SERVER_URL_BASE + '/getProfilePicture')
+            // setPhotoUrl(PROFILE_PIC_URL)
             updatePersonalInfoStateWithServerResp(response);
             setEditEnabledInfo('')
         }
@@ -69,7 +71,7 @@ const PersonalInfo = () => {
 
         processUrl({
             method: 'PUT',
-            url: process.env.REACT_APP_SERVER_URL_BASE +'/updateMyDetails',
+            url: process.env.REACT_APP_SERVER_URL_BASE +'/users/me',
             withCredentials : true,
             data: {
                 'display_name' : editState.displayName,
@@ -289,7 +291,7 @@ const PersonalInfo = () => {
     }
 
     const closePhotoUploadModal = () => {
-        setPhotoUrl(process.env.REACT_APP_SERVER_URL_BASE + '/getProfilePicture');
+        setPhotoUrl(PROFILE_PIC_URL);
         setUploadPhoto(false)
     }
 

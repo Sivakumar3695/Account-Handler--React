@@ -18,7 +18,7 @@ const SessionInfo = () => {
 
             processUrl({
                 method: 'GET',
-                url:  process.env.REACT_APP_SERVER_URL_BASE + '/getActiveSessions',
+                url:  process.env.REACT_APP_SERVER_URL_BASE + '/sessions',
                 withCredentials: true
             })
 
@@ -36,7 +36,7 @@ const SessionInfo = () => {
             const responseData = response.data;
             let code = responseData.code
             
-            if (code === 'logout')
+            if (code === 'log_out')
                 appContext.toggleAuthentication();
             else if (code === 'remote_logout')
                 setFetchDevices(true);
@@ -57,10 +57,7 @@ const SessionInfo = () => {
         else{
             processUrl({
                 method: 'POST',
-                url: process.env.REACT_APP_SERVER_URL_BASE + '/signOut',
-                data: {
-                    device_id: device.device_id
-                },
+                url: process.env.REACT_APP_SERVER_URL_BASE + '/devices/' + device.device_id + '/logout',
                 withCredentials: true
             })
         }
