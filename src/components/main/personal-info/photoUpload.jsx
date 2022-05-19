@@ -1,9 +1,9 @@
 import React, { useState } from "react"
 import { useEffect } from "react";
-import '../styles/photo-upload.css'
-import { useAxios } from "../utils/request-utils";
-import { Btn } from "./common/button";
-import CustomModal from "./common/modal";
+import '../../../styles/photo-upload.css'
+import { useAxios } from "../../../hooks/request-hook";
+import { Btn } from "../../common/button";
+import CustomModal from "../../common/modal";
 
 const UploadPhoto = (props) => {
     

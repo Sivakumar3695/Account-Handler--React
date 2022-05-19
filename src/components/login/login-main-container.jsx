@@ -1,12 +1,12 @@
 import React from 'react';
 import axios from 'axios';
-import '../styles/login-container.css';
+import '../../styles/login-container.css';
 import {Navigate} from 'react-router-dom';
-import { AppContext } from '../context/app-context';
-import { Btn } from './common/button';
+import { AppContext } from '../../context/app-context';
+import { Btn } from '../common/button';
 import { useState } from 'react';
 import { useContext } from 'react';
-import useInputHandler from '../utils/input-hook';
+import useInputHandler from '../../hooks/input-hook';
 import { useRef } from 'react';
 import GoogleSigninBtn from './google-login-handler';
 

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Link, Outlet, Navigate} from 'react-router-dom';
 import '../styles/app-home.css'
 import { AppContext } from '../context/app-context';
-import Loader from './loader';
+import Loader from './common/loader';
 
 const PERSONAL_INF_ELEMENT = 'personal-info'
 const MY_APP_ELEMENT = 'myapps'
@@ -89,7 +89,9 @@ class AppHome extends Component {
     mainAppContentHolder(){
         return (
             <div className='main-app-content-holder'>
-                <Outlet/>
+                <div className='main-content'>
+                    <Outlet/>
+                </div>
             </div>
         )
     }
@@ -97,10 +99,9 @@ class AppHome extends Component {
     render() { 
         return (
             <AppContext.Consumer>{
-                ({contextState, toggleUseAuthentication}) => (
+                ({contextState}) => (
                     this.renderAppHome(contextState.isUserAuthenticated)
-                )
-            }
+                )}
             </AppContext.Consumer>
         );
     }

@@ -93,24 +93,3 @@ export const useAxios = () => {
 
     return {getData, processing, processUrl}
 }
-
-export const useResponse = (resp) => {
-    
-    const [response] = useState(resp)
-    const [responseStatus, setResponseStatus] = useState(null);
-    const [responseData, setResponseData] = useState(null)
-
-    console.log(response);
-    useEffect(() => {
-        console.log('chill');
-        if (response){
-            setResponseData(response.data)
-            setResponseStatus(response.status)
-        }
-        console.log(responseStatus);
-        console.log(responseData);
-    }, [response])
-
-    return {responseStatus, responseData}
-
-}

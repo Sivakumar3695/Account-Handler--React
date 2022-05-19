@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import PersonalInfoModal from './personal-info-modal';
-import '../styles/personal-info.css';
-import '../styles/App.css';
-import { NullToEmptyStrConverter } from '../utils/response-utils';
-import { useAxios } from '../utils/request-utils';
-import useInputHandler from '../utils/input-hook';
-import {PersonalInfoDispMetaData} from '../metadata/personal-info'
-import UploadPhoto from './photoUpload';
-import { Btn } from './common/button';
+import React, { Suspense, useEffect, useState } from 'react';
+import { useAxios } from '../../../hooks/request-hook';
+import useInputHandler from '../../../hooks/input-hook';
+import {PersonalInfoDispMetaData} from '../../../metadata/personal-info'
+import { Btn } from '../../common/button';
+import nullToEmptyStrConverter from "../../../hooks/response-utils";
+
+import '../../../styles/personal-info.css';
+import Loader from '../../common/loader';
+
+const PersonalInfoModal = React.lazy(() => import('./personal-info-modal'))
+const UploadPhoto = React.lazy(() => import('./photoUpload'))
 
 
 const PersonalInfo = () => {
@@ -35,7 +37,7 @@ const PersonalInfo = () => {
     const {errorInputs, editState, editSpecificElement} = useInputHandler(state.personalInfo, PersonalInfoDispMetaData);
     const {getData, processing, processUrl} = useAxios();
 
-    const [photoUrl, setPhotoUrl] = useState(process.env.PUBLIC_URL + '/images/default-profile-icon.jpg')
+    const [photoUrl, setPhotoUrl] = useState(process.env.REACT_APP_SERVER_URL_BASE + '/getProfilePicture')
     const [uploadPhoto, setUploadPhoto] = useState(false)
 
     useEffect(() => {
@@ -253,7 +255,7 @@ const PersonalInfo = () => {
         
         var newState = {...state};
         
-        NullToEmptyStrConverter(responseData)        
+        nullToEmptyStrConverter(responseData)        
     
         var personalInfo = newState.personalInfo;
         personalInfo.displayName = resp_user_det.display_name;
@@ -273,14 +275,16 @@ const PersonalInfo = () => {
 
     const handleInfoEditModalPopup = () => {
         return (
-            <PersonalInfoModal 
-                show={state.incompleteDetailsExists} 
-                personalInfo={editState} 
-                updatePersonalInfoStateOnUserInput={editSpecificElement}
-                saveDetails={saveDetails}
-                errorInputs={errorInputs}
-                loading={processing}
-            />
+            <Suspense fallback={<Loader/>}>
+                <PersonalInfoModal 
+                    show={state.incompleteDetailsExists} 
+                    personalInfo={editState} 
+                    updatePersonalInfoStateOnUserInput={editSpecificElement}
+                    saveDetails={saveDetails}
+                    errorInputs={errorInputs}
+                    loading={processing}
+                />
+            </Suspense>
         )
     }
 
@@ -291,13 +295,15 @@ const PersonalInfo = () => {
 
     const handlePhotEditModal = () => {
         return (
-            <UploadPhoto 
-            show={uploadPhoto}
-            photoUrl={photoUrl}
-            serverResponse={getData}
-            updatePic={setPhotoUrl}
-            closeModal={closePhotoUploadModal}
-            />
+            <Suspense fallback={<Loader/>}>
+                <UploadPhoto 
+                show={uploadPhoto}
+                photoUrl={photoUrl}
+                serverResponse={getData}
+                updatePic={setPhotoUrl}
+                closeModal={closePhotoUploadModal}
+                />
+            </Suspense>
         )
     }
 
@@ -305,13 +311,12 @@ const PersonalInfo = () => {
     
     return (
         
-        <div className='main-content'>
-                {renderImageContainer()}
-                {renderDetailsHolder()}
-                {handleInfoEditModalPopup()}
-
-                {uploadPhoto && handlePhotEditModal()}
-        </div>
+        <React.Fragment>
+            {renderImageContainer()}
+            {renderDetailsHolder()}
+            {state.incompleteDetailsExists && handleInfoEditModalPopup()}
+            {uploadPhoto && handlePhotEditModal()}
+        </React.Fragment>
     )
 }
 

@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useState } from "react"
-import { AppContext } from "../context/app-context"
-import { useAxios, useResponse } from "../utils/request-utils"
+import { AppContext } from "../../context/app-context"
+import { useAxios } from "../../hooks/request-hook"
 
 export default function GoogleSigninBtn() {
 
@@ -87,7 +87,7 @@ export default function GoogleSigninBtn() {
 
     return (
         <div className="g-signin-btn-holder">
-            <div class="g_id_signin"
+            <div className="g_id_signin"
                 data-type="standard"
                 data-shape="rectangular"
                 data-theme="outline"

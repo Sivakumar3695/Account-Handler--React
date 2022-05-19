@@ -1,4 +1,4 @@
-import LoginContainer from './login-main-container';
+import LoginContainer from './login/login-main-container';
 import '../styles/App.css'
 
 import MainRouter from '../router/main-router';

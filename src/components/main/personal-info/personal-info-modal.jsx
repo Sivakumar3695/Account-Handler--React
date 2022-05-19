@@ -1,7 +1,7 @@
 import React from 'react';
-import {PersonalInfoDispMetaData} from '../metadata/personal-info'
-import { Btn } from './common/button';
-import CustomModal from './common/modal';
+import {PersonalInfoDispMetaData} from '../../../metadata/personal-info'
+import { Btn } from '../../common/button';
+import CustomModal from '../../common/modal';
 
 const PersonalInfoModal = (props) => {
 

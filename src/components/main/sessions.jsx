@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { useAxios } from '../utils/request-utils';
-import "../styles/sessions.css"
-import { Btn } from './common/button';
+import { useAxios } from '../../hooks/request-hook';
+import { Btn } from '../common/button';
 import { useContext } from 'react';
-import { AppContext } from '../context/app-context';
+import { AppContext } from '../../context/app-context';
+
+import "../../styles/sessions.css"
 
 const SessionInfo = () => {
 
@@ -125,12 +126,7 @@ const SessionInfo = () => {
         )
     }
 
-    return (
-        <div className='main-content'>
-            {renderDeviceList()}
-        </div>
-    );
-
+    return renderDeviceList()
 }
- 
+
 export default SessionInfo;
