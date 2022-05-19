@@ -5,6 +5,23 @@
   flex-direction: row;
   flex-wrap: wrap;
   flex-grow: 0;
+  opacity: 0;
+  animation: zoomIn 0.1s 0.5s linear forwards;
+}
+
+@keyframes zoomIn {
+  0% {
+    opacity: 0;
+  }
+  90% {
+    opacity: 0.5;
+  }
+  99.9% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 .green-light {
