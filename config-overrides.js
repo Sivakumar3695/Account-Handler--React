@@ -32,7 +32,7 @@ module.exports = function override(config, env) {
     }
     
     config.plugins.push(
-        new BundleAnalyzerPlugin(),
+        // new BundleAnalyzerPlugin(),
         new InjectManifest({
             swSrc: './public/sw.js'
         })
